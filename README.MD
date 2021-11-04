@@ -1,3 +1,17 @@
+## Running
+```bash
+lex your-lex-file.l
+cc -ll lex.yy.c
+
+# if you want to pass file:
+./a.out < input.file
+
+# if you whant type smth
+./a.out
+# End of input:
+# UNIX      ctrl + D
+# Windows   ctrl + Z
+```
 ## Task
 Вариант 1. Выражение CREATE TABLE.
 ```
