@@ -6,7 +6,7 @@ cc -ll lex.yy.c
 # if you want to pass file:
 ./a.out < input.file
 
-# if you whant type smth
+# if you want type smth
 ./a.out
 # End of input:
 # UNIX      ctrl + D
