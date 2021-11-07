@@ -23,11 +23,12 @@ EQ                  =
 COMPARISON          <>|<|>|<=|>=|{EQ}
 OR                  [Oo][Rr]
 AND                 [Aa][Nn][Dd]
+BOOLEAN_OP          {OR}|{AND}           
 NOT                 [Nn][Oo][Tt]
 /*
 FIELD_VALUE         {VALUE}|{IDENTIFIER}
 PREDICATE           {NOT}?{FIELD_VALUE}{COMPARISON}{FIELD_VALUE}
-CONDITION_FACTOR    {PREDICATE}|{PREDICATE}{BOLEAN_OP}{CONDITION}
+CONDITION_FACTOR    {PREDICATE}|{PREDICATE}{BOOLEAN_OP}{CONDITION}
 CONDITION           {CONDITION_FACTOR}|\({CONDITION_FACTOR}\)
 */
 SELECT              [Ss][Ee][Ll][Ee][Cc][Tt]
@@ -46,8 +47,7 @@ LB                  \)
 {DEFAULT}           printf("DEFAULT");
 {EQ}                printf("EQ");
 {COMPARISON}        printf("COMPARISON");
-{OR}                printf("OR");
-{AND}               printf("AND");
+{BOOLEAN_OP}        printf("BOOLEAN_OP");
 {NOT}               printf("NOT");
 {DISTINCT}          printf("DISTINCT");
 {FROM}              printf("FROM");
