@@ -7,7 +7,7 @@ PUNCTUATION_MARKS   [\.,\?!;:]
 DIGIT               [0-9]
 LETTER              [a-zA-Z]
 NUMBER              -?{DIGIT}+
-SYMBOL              [{DIGIT}{LETTER}{PUNCTUATION_MARKS}{DELIMITER}]
+SYMBOL              ({DIGIT}|{LETTER}|{PUNCTUATION_MARKS}|{DELIMITER})
 STRING              {SYMBOL}+
 IDENTIFIER          ({LETTER}|_)({LETTER}|_|{DIGIT})*
 FIELDS_LIST         {IDENTIFIER}({DELIMITER},{DELIMITER}{IDENTIFIER})*
@@ -18,7 +18,7 @@ MATH_EXP            {MATH_FACTOR}|\({MATH_FACTOR}\)
 */
 NULL                [Nn][Uu][Ll][Ll]
 DEFAULT             [Dd][Et][Ff][Aa][Uu][Ll][Tt]
-VALUE               [('{STRING}'){NULL}{DEFAULT}]
+VALUE               '{STRING}'|{NULL}|{DEFAULT}
 EQ                  =
 COMPARISON          <>|<|>|<=|>=|{EQ}
 OR                  [Oo][Rr]
@@ -44,6 +44,7 @@ LB                  \)
 {NUMBER}            printf("NUMBER");
 {NULL}              printf("NULL");
 {DEFAULT}           printf("DEFAULT");
+{EQ}                printf("EQ");
 {COMPARISON}        printf("COMPARISON");
 {OR}                printf("OR");
 {AND}               printf("AND");
