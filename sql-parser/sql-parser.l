@@ -11,7 +11,7 @@ SYMBOL              ({DIGIT}|{LETTER}|{PUNCTUATION_MARKS}|{DELIMITER})
 STRING              {SYMBOL}+
 IDENTIFIER          ({LETTER}|_)({LETTER}|_|{DIGIT})*
 FIELDS_LIST         {IDENTIFIER}({DELIMITER},{DELIMITER}{IDENTIFIER})*
-MATH_OPERATOR       [/+/-/*//]
+MATH_OPERATOR       \+|\*|\-|\/
 /*
 MATH_FACTOR         {NUMBER}|{NUMBER}{MATH_OPERATOR}{MATH_EXP}
 MATH_EXP            {MATH_FACTOR}|\({MATH_FACTOR}\)
@@ -23,7 +23,7 @@ EQ                  =
 COMPARISON          <>|<|>|<=|>=|{EQ}
 OR                  [Oo][Rr]
 AND                 [Aa][Nn][Dd]
-BOOLEAN_OP          {OR}|{AND}           
+BOOLEAN_OP          {OR}|{AND}
 NOT                 [Nn][Oo][Tt]
 /*
 FIELD_VALUE         {VALUE}|{IDENTIFIER}
@@ -40,28 +40,27 @@ LB                  \)
 
 %%
 {SELECT}            printf("SELECT");
-{DELIMITER}         printf(" ");
-{MATH_OPERATOR}     printf("MATH_OPERATOR");
-{NUMBER}            printf("NUMBER");
-{NULL}              printf("NULL");
-{DEFAULT}           printf("DEFAULT");
-{EQ}                printf("EQ");
-{COMPARISON}        printf("COMPARISON");
-{BOOLEAN_OP}        printf("BOOLEAN_OP");
-{NOT}               printf("NOT");
-{DISTINCT}          printf("DISTINCT");
 {FROM}              printf("FROM");
 {WHERE}             printf("WHERE");
+{NULL}              printf("NULL");
+{DEFAULT}           printf("DEFAULT");
+{DISTINCT}          printf("DISTINCT");
+{NOT}               printf("NOT");
+{BOOLEAN_OP}        printf("BOOLEAN_OP");
+{MATH_OPERATOR}     printf("MATH_OPERATOR");
+{EQ}                printf("EQ");
+{COMPARISON}        printf("COMPARISON");
+{DELIMITER}         printf(" ");
+\;                  printf(" END");
+{RB}                printf(" RB ");
+{LB}                printf(" LB ");
 {IDENTIFIER}        printf("IDENTIFIER");
 {FIELDS_LIST}       printf("FIELDS_LIST");
-\;                  printf("END");
-{RB}                printf("RB");
-{LB}                printf("LB");
 \n                  {lineNumber++;printf("\n");}
+{NUMBER}            printf("NUMBER");
 {VALUE}             printf("VALUE");
 .                   {yyerror(yytext);};
 %%
 void yyerror(char *s){
-    printf("\nERROR: illegal symbol on line: %d.\n", lineNumber);
-    printf("near '%s'\n", s);
+    printf("\nERROR: illegal symbol on line: %d: %s \n ", lineNumber, s);
 }
