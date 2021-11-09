@@ -35,6 +35,11 @@ SELECT              [Ss][Ee][Ll][Ee][Cc][Tt]
 DISTINCT            [Dd][Ii][Ss][Tt][Ii][Nn][Cc][Tt]
 FROM                [Ff][Rr][Oo][Mm]
 WHERE               [Ww][Hh][Ee][Rr][Ee]
+ORDER_BY            [Oo][Rr][Dd][Ee][Rr]{DELIMITER}[Bb][Yy]
+ASC                 [Aa][Ss][Cc]
+DESC                [Dd][Ee][Ss][Cc]
+SORT                {ASC}|{DESC}
+GROUP_BY            [Gg][Rr][Oo][Uu][Pp]{DELIMITER}[Bb][Yy]
 RB                  \(
 LB                  \)
 
@@ -45,6 +50,9 @@ LB                  \)
 {NULL}              printf("NULL");
 {DEFAULT}           printf("DEFAULT");
 {DISTINCT}          printf("DISTINCT");
+{ORDER_BY}          printf("ORDER_BY");
+{SORT}              printf("SORT");
+{GROUP_BY}          printf("GROUP_BY");
 {NOT}               printf("NOT");
 {BOOLEAN_OP}        printf("BOOLEAN_OP");
 {MATH_OPERATOR}     printf("MATH_OPERATOR");
@@ -59,6 +67,7 @@ LB                  \)
 \n                  {lineNumber++;printf("\n");}
 {NUMBER}            printf("NUMBER");
 {VALUE}             printf("VALUE");
+,                   printf("COMMA");
 .                   {yyerror(yytext);};
 %%
 void yyerror(char *s){
