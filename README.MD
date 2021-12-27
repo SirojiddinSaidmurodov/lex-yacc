@@ -11,6 +11,11 @@ cc -ll lex.yy.c
 # End of input:
 # UNIX      ctrl + D
 # Windows   ctrl + Z
+
+# Running yacc:
+yacc -vd your-yacc-file.y
+lex your-lex-file.l
+cc y.tab.c lex.yy.c
 ```
 ## Task
 Вариант 1. Выражение CREATE TABLE.
