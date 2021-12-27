@@ -4,6 +4,10 @@ select AppName, AppCategory from Apps;
 select AppName AppCategory from Apps;
 Select distinct AppName from Apps WHERE AppName = NUll AND (Downloads > 10000);
 SELECT * FROM Customers;
- CustomerID, Country FROM Customers;
+CustomerID, Country FROM Customers;
 select AppName from Apps where AppPrice > 60;
-select AppName from Apps where AppPrice > 60;
+select AppName from Apps where AppPrice > 60 + 50;
+select AppName from Apps where AppPrice > 60 50;
+SELECT AppName
+FROM Apps
+WHERE AppPrice > 60;

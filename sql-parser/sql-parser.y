@@ -35,15 +35,18 @@
         }
     }
 
+    void printOK(){
+        fprintf(stderr,"OK line: %d\n", lineNumber);
+    }
+
 %}
 %%
 select_list:
-	select  {printf("OK\n");} | 
+	select | 
 	select select_list;
-
 select:
-    select_part fields_list FROM identifier_list where_part END|
-    select_part fields_list FROM identifier_list END;
+    select_part fields_list FROM identifier_list where_part END {printOK();}|
+    select_part fields_list FROM identifier_list END {printOK();};
 where_part:
     WHERE condition ;
 fields_list:
@@ -52,13 +55,13 @@ fields_list:
 identifier_list:
     IDENTIFIER |
     identifier_list COMMA IDENTIFIER |
-    IDENTIFIER error {yyerror("Commma missed");} IDENTIFIER |
-    error {yyerror("Missed identifier ");};
+    IDENTIFIER {yyerror("Commma missed");} IDENTIFIER |
+    {yyerror("Missed identifier ");};
 select_part:
     SELECT DISTINCT |
     SELECT ALL |
     SELECT |
-    error {yyerror("Missed SELECT ");};
+    {yyerror("Missed SELECT ");};
 condition:
     condition_factor |
     RB condition_factor LB;
@@ -76,7 +79,8 @@ number_expression:
     RB number_factor LB;
 number_factor:
     NUMBER |
-    NUMBER MATH_OPERATOR number_expression;
+    NUMBER MATH_OPERATOR number_expression |
+    NUMBER number_expression {yyerror("Missed math operator");};
 value:
     STRING |
     number_expression |
