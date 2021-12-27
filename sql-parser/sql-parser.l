@@ -1,75 +1,76 @@
 %{
+    #include "y.tab.h"
     int lineNumber = 1;
     void yyerror(char *);
+    int yyparse();
+    static int next_column = 1;
+    int column = 1;
+
+    #define HANDLE_COLUMN column = next_column; next_column += strlen(yytext)
 %}
 DELIMITER           [ \t\r]*
-PUNCTUATION_MARKS   [\.,\?!;:]
+COMMA               [,]
+PUNCTUATION_MARKS   [\.{COMMA}\?!;:]
 DIGIT               [0-9]
 LETTER              [a-zA-Z]
 NUMBER              -?{DIGIT}+
-SYMBOL              ({DIGIT}|{LETTER}|{PUNCTUATION_MARKS}|{DELIMITER})
-STRING              {SYMBOL}+
+SYMBOL              ({DIGIT}|{LETTER}|{PUNCTUATION_MARKS})
+STRING              '{SYMBOL}+'
 IDENTIFIER          ({LETTER}|_)({LETTER}|_|{DIGIT})*
-FIELDS_LIST         {IDENTIFIER}({DELIMITER},{DELIMITER}{IDENTIFIER})*
-MATH_OPERATOR       \+|\*|\-|\/
-/*
-MATH_FACTOR         {NUMBER}|{NUMBER}{MATH_OPERATOR}{MATH_EXP}
-MATH_EXP            {MATH_FACTOR}|\({MATH_FACTOR}\)
-*/
-NULL                [Nn][Uu][Ll][Ll]
+/* FIELDS_LIST          {IDENTIFIER}({DELIMITER},{DELIMITER}{IDENTIFIER})* */
+ASTERISK            \*
+MATH_OPERATOR       \+|\-|\/|{ASTERISK}
+NULL_WORD           [Nn][Uu][Ll][Ll]
 DEFAULT             [Dd][Et][Ff][Aa][Uu][Ll][Tt]
-VALUE               '{STRING}'|{NULL}|{DEFAULT}
+/* VALUE               STRING|{NULL_WORD}|{DEFAULT} */
 EQ                  =
 COMPARISON          <>|<|>|<=|>=|{EQ}
 OR                  [Oo][Rr]
 AND                 [Aa][Nn][Dd]
 BOOLEAN_OP          {OR}|{AND}
 NOT                 [Nn][Oo][Tt]
-/*
-FIELD_VALUE         {VALUE}|{IDENTIFIER}
-PREDICATE           {NOT}?{FIELD_VALUE}{COMPARISON}{FIELD_VALUE}
-CONDITION_FACTOR    {PREDICATE}|{PREDICATE}{BOOLEAN_OP}{CONDITION}
-CONDITION           {CONDITION_FACTOR}|\({CONDITION_FACTOR}\)
-*/
 SELECT              [Ss][Ee][Ll][Ee][Cc][Tt]
 DISTINCT            [Dd][Ii][Ss][Tt][Ii][Nn][Cc][Tt]
 FROM                [Ff][Rr][Oo][Mm]
 WHERE               [Ww][Hh][Ee][Rr][Ee]
-ORDER_BY            [Oo][Rr][Dd][Ee][Rr]{DELIMITER}[Bb][Yy]
-ASC                 [Aa][Ss][Cc]
-DESC                [Dd][Ee][Ss][Cc]
-SORT                {ASC}|{DESC}
-GROUP_BY            [Gg][Rr][Oo][Uu][Pp]{DELIMITER}[Bb][Yy]
+/* ORDER_BY            [Oo][Rr][Dd][Ee][Rr]{DELIMITER}[Bb][Yy]
+ ASC                 [Aa][Ss][Cc]
+ DESC                [Dd][Ee][Ss][Cc]
+ SORT                {ASC}|{DESC}
+ GROUP_BY            [Gg][Rr][Oo][Uu][Pp]{DELIMITER}[Bb][Yy]
+*/
 RB                  \(
 LB                  \)
 
 %%
-{SELECT}            printf("SELECT");
-{FROM}              printf("FROM");
-{WHERE}             printf("WHERE");
-{NULL}              printf("NULL");
-{DEFAULT}           printf("DEFAULT");
-{DISTINCT}          printf("DISTINCT");
-{ORDER_BY}          printf("ORDER_BY");
-{SORT}              printf("SORT");
-{GROUP_BY}          printf("GROUP_BY");
-{NOT}               printf("NOT");
-{BOOLEAN_OP}        printf("BOOLEAN_OP");
-{MATH_OPERATOR}     printf("MATH_OPERATOR");
-{EQ}                printf("EQ");
-{COMPARISON}        printf("COMPARISON");
-{DELIMITER}         printf(" ");
-\;                  printf(" END");
-{RB}                printf(" RB ");
-{LB}                printf(" LB ");
-{IDENTIFIER}        printf("IDENTIFIER");
-{FIELDS_LIST}       printf("FIELDS_LIST");
-\n                  {lineNumber++;printf("\n");}
-{NUMBER}            printf("NUMBER");
-{VALUE}             printf("VALUE");
-,                   printf("COMMA");
-.                   {yyerror(yytext);};
+
+{SELECT}            {HANDLE_COLUMN; return SELECT;}
+{FROM}              {HANDLE_COLUMN; return FROM;}
+{WHERE}             {HANDLE_COLUMN; return WHERE;}
+{NULL_WORD}         {HANDLE_COLUMN; return NULL_WORD;}
+{DEFAULT}           {HANDLE_COLUMN; return DEFAULT;}
+{DISTINCT}          {HANDLE_COLUMN; return DISTINCT;}
+{ASTERISK}          {HANDLE_COLUMN; return ASTERISK;}
+{NOT}               {HANDLE_COLUMN; return NOT;}
+{BOOLEAN_OP}        {HANDLE_COLUMN; return BOOLEAN_OP;}
+{MATH_OPERATOR}     {HANDLE_COLUMN; return MATH_OPERATOR;}
+{COMPARISON}        {HANDLE_COLUMN; return COMPARISON;}
+\;                  {HANDLE_COLUMN; return END;}
+{RB}                {HANDLE_COLUMN; return RB;}
+{LB}                {HANDLE_COLUMN; return LB;}
+{STRING}            {HANDLE_COLUMN; return STRING;}
+{IDENTIFIER}        {HANDLE_COLUMN; return IDENTIFIER;}
+\n                  {lineNumber++; HANDLE_COLUMN; next_column = 1;}
+{NUMBER}            {HANDLE_COLUMN; return NUMBER;}
+{COMMA}             {HANDLE_COLUMN; return COMMA;}
+{DELIMITER}         ;
+.                   {HANDLE_COLUMN; return(yytext[0]);}
 %%
-void yyerror(char *s){
-    printf("\nERROR: illegal symbol on line: %d: %s \n ", lineNumber, s);
+int main(int argc, char* argv[]) {
+  yyparse();
+  exit(0);
+
+}
+int yywrap(){
+    return(1);
 }
